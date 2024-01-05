@@ -13,7 +13,7 @@
 
 ##  What is Water Framework ? <a name="introduction"></a>
 
-![Water Framework Concepts](profile/images/water-framework-concepts.png)
+![Water Framework Concepts](profile/images/water-framework-concepts-v2.png)
 
 Water framework is a "cross-framework" that is, it allows you to write modular applications that can run on different java runtimes (for the time being) such as spring,osgi, quarkus, etc...
 

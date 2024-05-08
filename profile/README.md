@@ -13,7 +13,7 @@
 
 ##  What is Water Framework ? <a name="introduction"></a>
 
-![Water Framework Concepts](profile/images/water-framework-concepts-v2.png)
+![Water Framework Concepts](images/water-framework-concepts-v2.png)
 
 Water framework is a "cross-framework" that is, it allows you to write modular applications that can run on different java runtimes (for the time being) such as spring,osgi, quarkus, etc...
 
@@ -50,21 +50,15 @@ Water Framework three main pillars are:
 ### First Pillar: Water Framework
 
 As mentioned earlier, the framework has a whole set of "out of the box" features that allow applications to be created quickly and already provided with a basic infrastructure (user management, permissions, event streaming integrations). Project creation can also be managed through "water-generator" the code generator that helps scaffolding projects quickly.
-
 It is possible to create complex applications that manage permissions, accesses, entities and expose rest services in minutes.
-
 The most interesting thing about Water Framework is that the developer can choose whether he wants to develop his application for a specific runtime (spring, osgi, quarkus) or whether he wants to develop his application in "cross-framework" mode so that it too can be enjoyed by different runtimes as needed.
 
 ### Second Pillar: Water Framework Generator
 
 The generator allows automating the project creation process, including the selection of technology. Additionally, it is possible to scaffold modules that are "cross-framework," enabling the creation of traditional applications for a specific runtime or applications that support different runtimes.
-
 In the perspective of managing complex applications, the generator also performs dependency analysis, potentially identifying cycles. Cycles in project dependencies are one of the main obstacles to proper design, and discovering them usually happens late, typically when new versions are released.
-
 During each build, the generator verifies the integrity of dependencies, triggering errors in the case of circular dependencies.
-
 Finally, it also provides insights into the quality of the produced software through stability metrics.
-
 The stability metrics indicate the quality of the code according to a very simple principle:
 
 Modules containing abstractions should have a high degree of import (i.e., be imported by other projects).
@@ -82,7 +76,36 @@ With Water Framework you can choose to:
 
 This feature makes applications customizable because each team can write code with the technology they are most comfortable with. In addition, the generator will make you super productive by already creating a solid base infrastructure.
 
-##  Founding Principles <a name="principles"></a>
+### Who should use it?
+
+All developers who are building a product that allows them to be able to integrate their own modules within the main solution.
+Whether it is a library or an extensible water platform would allow it to be enjoyed and customized by leveraging the framework that is "most convenient" for those who have to write the customizations.
+
+Suppose we wrote a CMS with water framework and suppose we allow the user to be able to write their own modules. Water would allow you to be able to start the CMS in "spring," and the user could write their customizations directly using spring.
+Another user might decide instead to svrivere customizations in Quarkus because they are using it in this version.
+Finally, a user who wants to write modules that in turn are "cross-framework" can safely do so by using just water framework in his modules.
+So using this solution allows you to be able to write libraries and/or applications that can then be customized with whatever technology you want. This is particularly convenient in some business contexts where there are specific policies about what framework or technologies to use. Some companies use only OSGi, others only spring, and so on.
+
+With Water, every module written can be enjoyed natively on the major Java frameworks on the market.
+
+### Architecture
+
+![Water Ark](images/water-high-ark.png)
+
+The basic components of the architecture are the following:
+
+- Core:
+- Repository:
+- Jpa Repository:
+- Rest: 
+
+#### Core
+
+#### Repository
+
+#### JPA Repository
+
+#### Rest
 
 ##  Getting Started <a name="getting-started"></a>
 

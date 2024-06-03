@@ -13,7 +13,7 @@
 
 ##  What is Water Framework ? <a name="introduction"></a>
 
-![Water Framework Concepts](https://github.com/Water-Framework/.github/blob/main/profile/images/water-framework-concepts-v2.png/water-framework-concepts-v2.png)
+![Water Framework Concepts](images/water-framework-concepts-v2.png)
 
 Water framework is a "cross-framework" that is, it allows you to write modular applications that can run on different java runtimes (for the time being) such as spring,osgi, quarkus, etc...
 
@@ -90,7 +90,7 @@ With Water, every module written can be enjoyed natively on the major Java frame
 
 ### Architecture
 
-![Water Ark](https://github.com/Water-Framework/.github/blob/main/profile/images/water-high-ark.png)
+![Water Ark](images/water-high-ark.png)
 
 The basic components of the architecture are the following:
 

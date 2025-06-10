@@ -1,4 +1,3 @@
-
 # Water Framework - be water my friend ;)
  *"Empty your mind, be formless. Shapeless, like water. If you put water into a cup, it becomes the cup. You put water into a bottle and it becomes the bottle. You put it in a teapot, it becomes the teapot. Now, water can flow or it can crash. Be water, my friend."* - Bruce Lee
 
@@ -101,15 +100,113 @@ The basic components of the architecture are the following:
 
 #### Core
 
+The Core module is the foundation of the Water Framework, providing essential services and abstractions:
+
+- **Security & Permissions**: Implements a granular permission system with role-based access control
+- **Service Registry**: Manages component registration and dependency injection across different runtimes
+- **Event System**: Provides a robust event handling mechanism for real-time applications
+- **Validation**: Offers a flexible validation framework for data integrity
+- **Interceptors**: Supports AOP-like functionality for cross-cutting concerns
+
+Key features:
+- 100% modular design
+- Runtime-agnostic implementations
+- Extensible security model
+- Built-in event streaming support
+- Comprehensive test coverage
+
 #### Repository
+
+The Repository module provides a unified data access layer:
+
+- **Generic Repository Pattern**: Abstracts data access operations
+- **Query Builder**: Type-safe query construction
+- **Pagination Support**: Built-in pagination and sorting
+- **Filter System**: Flexible filtering capabilities
+- **Transaction Management**: Cross-runtime transaction support
 
 #### JPA Repository
 
+Extends the Repository module with JPA-specific implementations:
+
+- **JPA Integration**: Seamless integration with JPA providers
+- **Entity Management**: Enhanced entity lifecycle management
+- **Query Optimization**: Advanced query optimization features
+- **Caching**: Multi-level caching support
+- **Audit Trail**: Automatic audit trail generation
+
 #### Rest
+
+The Rest module provides RESTful API capabilities:
+
+- **Resource Mapping**: Automatic REST resource mapping
+- **Content Negotiation**: Flexible content type handling
+- **Security Integration**: Built-in security filters
+- **Documentation**: Automatic API documentation
+- **Versioning**: API versioning support
 
 ##  Getting Started <a name="getting-started"></a>
 
+To get started with Water Framework:
+
+1. Install prerequisites:
+   - Java 17 or higher
+   - Node.js 18.20.8 or higher
+   - Gradle 7.6 or higher
+
+2. Install the Water Generator:
+   ```bash
+   npm install -g yo generator-water --registry https://nexus.acsoftware.it/nexus/repository/npm-acs-public-repo
+   ```
+
+3. Create a new project:
+   ```bash
+   yo water:app
+   ```
+
+4. Follow the interactive prompts to:
+   - Choose your target runtime
+   - Select required features
+   - Configure project settings
+
 ##  Core Concepts <a name="core-concepts"></a>
+
+### Framework Components
+
+- **@FrameworkComponent**: Marks a class as a framework component
+- **@Service**: Defines a service component
+- **@Repository**: Marks a data access component
+- **@Security**: Defines security constraints
+
+### Security Model
+
+- Role-based access control
+- Permission-based authorization
+- Resource-level security
+- Cross-runtime security context
+
+### Event System
+
+- Event publishing and subscription
+- Asynchronous event processing
+- Event filtering and routing
+- Cross-runtime event propagation
+
+### Repository Pattern
+
+- Generic CRUD operations
+- Type-safe queries
+- Pagination and sorting
+- Filter system
+- Transaction management
+
+### REST API
+
+- Resource mapping
+- Content negotiation
+- Security integration
+- API versioning
+- Documentation generation
 
 
 

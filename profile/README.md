@@ -2,220 +2,1057 @@
   <img src="images/logo.webp" alt="Water Framework Logo" width="200"/>
 </p>
 
-# Water Framework - be water my friend ;)
- *"Empty your mind, be formless. Shapeless, like water. If you put water into a cup, it becomes the cup. You put water into a bottle and it becomes the bottle. You put it in a teapot, it becomes the teapot. Now, water can flow or it can crash. Be water, my friend."* - Bruce Lee
+<h1 align="center">Water Framework</h1>
+<p align="center"><i>"Empty your mind, be formless. Shapeless, like water. If you put water into a cup, it becomes the cup. You put water into a bottle and it becomes the bottle. You put it in a teapot, it becomes the teapot. Now, water can flow or it can crash. Be water, my friend."</i> — Bruce Lee</p>
+
+<p align="center">
+  <b>Write once. Run on Spring, OSGi, Quarkus — or all of them.</b>
+</p>
+
+---
+
+## Table of Contents
+
+1. [What is Water Framework?](#1-what-is-water-framework)
+2. [Key Features](#2-key-features)
+3. [The Three Pillars](#3-the-three-pillars)
+4. [Architecture Overview](#4-architecture-overview)
+5. [Getting Started](#5-getting-started)
+6. [Core Concepts](#6-core-concepts)
+   - [Components & Services](#61-components--services)
+   - [Dependency Injection](#62-dependency-injection)
+   - [Component Lifecycle](#63-component-lifecycle)
+7. [Entity Management](#7-entity-management)
+   - [Defining Entities](#71-defining-entities)
+   - [Repository & CRUD](#72-repository--crud)
+   - [QueryBuilder](#73-querybuilder)
+   - [Pagination & Ordering](#74-pagination--ordering)
+8. [REST API](#8-rest-api)
+   - [Defining REST Endpoints](#81-defining-rest-endpoints)
+   - [Entity CRUD Endpoints](#82-entity-crud-endpoints)
+   - [JSON Views](#83-json-views)
+   - [Exception Handling](#84-exception-handling)
+9. [Security](#9-security)
+   - [Authentication (JWT)](#91-authentication-jwt)
+   - [Authorization (Roles & Permissions)](#92-authorization-roles--permissions)
+   - [Security Annotations](#93-security-annotations)
+10. [Multi-Runtime Support](#10-multi-runtime-support)
+11. [Advanced Topics](#11-advanced-topics)
+    - [Interceptors & AOP](#111-interceptors--aop)
+    - [Event System](#112-event-system)
+    - [Entity Extensions](#113-entity-extensions)
+    - [Shared Entities](#114-shared-entities)
+    - [Module Properties](#115-module-properties)
+12. [Module Reference](#12-module-reference)
+13. [Generator Commands](#13-generator-commands)
+14. [Who Should Use It?](#14-who-should-use-it)
+15. [License](#15-license)
+
+---
+
+## 1. What is Water Framework?
+
+Water Framework is a **cross-framework** for Java that lets you write modular applications capable of running on different runtimes — **Spring**, **OSGi**, **Quarkus** — without changing a single line of business code.
+
+Like water adapting to its container, the framework takes the shape of the runtime it runs on. A component annotated with `@FrameworkComponent` becomes a Spring Bean in Spring, a Declarative Service in OSGi, and a CDI bean in Quarkus — automatically.
+
+Water Framework is not just a runtime abstraction. It ships with a complete set of **production-ready features out of the box**:
+
+- User management with registration, activation, and password reset
+- Granular role-based permission system
+- JPA persistence with QueryBuilder API
+- REST API layer with JWT authentication
+- Event system for real-time applications
+- Code generator for rapid scaffolding
+
+All features follow a **"Convention over Coding"** paradigm: a set of code conventions, tools, and project structures that — when followed — drastically reduce development time, code maintenance, and architectural complexity.
+
+---
+
+## 2. Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **Cross-Runtime** | Single codebase runs on Spring, OSGi, Quarkus, or Standalone |
+| **Code Generator** | Yeoman-based generator scaffolds full modules in seconds |
+| **User Management** | Registration, activation, password reset, email confirmation |
+| **Permission System** | Granular RBAC with entity-level, action-level, and custom permissions |
+| **JPA Persistence** | Repository pattern with fluent QueryBuilder and pagination |
+| **REST Layer** | Dual JAX-RS + Spring MVC support with Swagger/OpenAPI |
+| **JWT Security** | Built-in JWT authentication with multi-issuer support |
+| **Event System** | Publish/subscribe events across the application |
+| **Interceptors** | AOP-like before/after method interception |
+| **Entity Extensions** | Extend entities at runtime without modifying source |
+| **Dependency Analysis** | Build-time circular dependency detection |
+| **Stability Metrics** | Automated design quality measurement |
+
+---
+
+## 3. The Three Pillars
+
+```mermaid
+graph LR
+    A["<b>Water Framework</b><br/>Core + Modules<br/>Out-of-the-box features"] --> D[Your Application]
+    B["<b>Generator</b><br/>Scaffolding + Build<br/>Dependency Analysis"] --> D
+    C["<b>Runtimes</b><br/>Spring / OSGi / Quarkus<br/>Standalone"] --> D
+    style A fill:#0277BD,color:#fff
+    style B fill:#00838F,color:#fff
+    style C fill:#00695C,color:#fff
+    style D fill:#1565C0,color:#fff
+```
+
+### Pillar 1: Water Framework
+
+The framework provides a modular architecture with production-ready features. You can build applications that manage users, permissions, entities, and REST services in minutes. Choose between developing for a **specific runtime** (e.g., Spring only) or in **cross-framework mode** (runs everywhere).
 
-## Summary
-1. [What is Water Framework](#introduction)
-    1. [First Pillar]()
-    2. [Second Pillar]()
-    3. [Third Pillar]()
-2. [Founding Principles](#principles)
-3. [Getting Started](#getting-started)
-4. [Core Concepts](#core-concepts)
+### Pillar 2: Water Generator
 
-##  What is Water Framework ? <a name="introduction"></a>
+A Yeoman-based code generator that:
+- Scaffolds complete project structures (modules, entities, REST APIs)
+- Supports both single-runtime and cross-framework modes
+- Detects circular dependencies at build time
+- Calculates **stability metrics** — ensuring modules with abstractions are highly imported, while implementation modules remain loosely coupled
 
-![Water Framework Concepts](images/water-framework-concepts-v2.png)
+### Pillar 3: Runtimes
 
-Water framework is a "cross-framework" that is, it allows you to write modular applications that can run on different java runtimes (for the time being) such as spring,osgi, quarkus, etc...
+Two development modes:
 
-The key feature of Water Framework is that it takes the form of the container that incorporates it (like water, precisely).
+1. **Technology-specific** — Use Water as a productivity booster within your preferred framework. Components register as native Spring Beans, OSGi services, etc.
+2. **Cross-framework** — Use `@FrameworkComponent` and Water annotations to write runtime-agnostic code that deploys anywhere.
+
+---
 
-What are the main advantages of this framework? First of all it has a number of "out of the box" features such as:
+## 4. Architecture Overview
 
-* User management
-* Granular permission system
-* Integrations with different technologies
-* Integrations for realtime/event streaming applications. 
+![Water Architecture](images/water-high-ark.png)
 
-In addition, all these features are customizable. Do you have needs to change the permission system to your liking and totally and/or partially override the default behavior? No problem! Water Framework has a 100% modular structure based on SOLID principles of object-oriented programming.
-It was created to support all the latest technologies and defines a new "Convention over coding" development standard.
+### Layer Diagram
 
-This means that the structure of applications follows certain mechanisms and dynamics that allows them to have truly simple code management (from development to build and deployment) and interface remoting.
-"Convention over coding" is not just a "development to a standard" but a set of techniques, tools and code conventions that ,if followed, drastically cut down development time and especially code maintenance.
+```mermaid
+graph TB
+    subgraph Application["Your Application"]
+        REST["REST API<br/>@FrameworkRestApi"]
+        SVC["Services<br/>Api / SystemApi"]
+        REPO["Repository<br/>BaseRepository / JpaRepository"]
+    end
 
-The way it is described, our solution sounds very similar to the classic "Convention over configuration." In reality, it is not.
-The so-called "Convention over configuration" reduces the configurations to be specified by the developer who can rely on some "default" conventions of the technology used.
+    subgraph Core["Water Core"]
+        REG["Component Registry"]
+        SEC["Security & Permissions"]
+        EVT["Event System"]
+        INT["Interceptors / AOP"]
+        VAL["Validation"]
+    end
 
-One example out of all: @Entity on a Java class will associate a table with the class name if not specified.
-This type of approach is certainly useful and is currently used within the framework, but we have decided to go even further.
+    subgraph Runtime["Runtime Adapters"]
+        SPR["Spring"]
+        OSGI["OSGi"]
+        QRK["Quarkus"]
+    end
 
-You might think that all these advantages require special libraries or constructs where you lose control of the code. They don't. Water Framework is extremely clear and has very simple concepts that do not complicate but rather help you structure your source code better.
-In fact, you can design monolithic or microservices applications, or the classic "modulith" or hybrid of microservices and monoliths.
+    REST --> SVC
+    SVC --> REPO
+    SVC --> SEC
+    SVC --> EVT
+    REPO --> Core
+    REST --> INT
+    Core --> Runtime
 
-Water Framework three main pillars are:
+    style Application fill:#E3F2FD,stroke:#1565C0
+    style Core fill:#E0F2F1,stroke:#00695C
+    style Runtime fill:#FFF3E0,stroke:#E65100
+```
 
-* Water Framework
-* Tools (Water Framework Generator)
-* Runtimes
+### Service Layer Architecture
 
-### First Pillar: Water Framework
+```mermaid
+graph LR
+    CLIENT[Client] -->|HTTP| RESTAPI["RestApi<br/><i>@FrameworkRestApi</i>"]
+    RESTAPI -->|delegates| API["Api<br/><i>@AllowPermissions</i>"]
+    API -->|calls| SYSAPI["SystemApi<br/><i>validation + events</i>"]
+    SYSAPI -->|persists| REPOSITORY["Repository<br/><i>JPA / QueryBuilder</i>"]
+    REPOSITORY -->|SQL| DB[(Database)]
 
-As mentioned earlier, the framework has a whole set of "out of the box" features that allow applications to be created quickly and already provided with a basic infrastructure (user management, permissions, event streaming integrations). Project creation can also be managed through "water-generator" the code generator that helps scaffolding projects quickly.
-It is possible to create complex applications that manage permissions, accesses, entities and expose rest services in minutes.
-The most interesting thing about Water Framework is that the developer can choose whether he wants to develop his application for a specific runtime (spring, osgi, quarkus) or whether he wants to develop his application in "cross-framework" mode so that it too can be enjoyed by different runtimes as needed.
-
-### Second Pillar: Water Framework Generator
-
-The generator allows automating the project creation process, including the selection of technology. Additionally, it is possible to scaffold modules that are "cross-framework," enabling the creation of traditional applications for a specific runtime or applications that support different runtimes.
-In the perspective of managing complex applications, the generator also performs dependency analysis, potentially identifying cycles. Cycles in project dependencies are one of the main obstacles to proper design, and discovering them usually happens late, typically when new versions are released.
-During each build, the generator verifies the integrity of dependencies, triggering errors in the case of circular dependencies.
-Finally, it also provides insights into the quality of the produced software through stability metrics.
-The stability metrics indicate the quality of the code according to a very simple principle:
-
-Modules containing abstractions should have a high degree of import (i.e., be imported by other projects).
-Modules containing implementations should not have a high degree of import precisely because they are subject to change.
-The generator calculates the degree of abstraction for each module and provides a measure (along with an index of the results) to determine whether the design is appropriate or not.
-
-### Third Pillar: Runtimes
-
-With Water Framework you can choose to:
-
-- Develop an application in your reference java technology already taking advantage of all the out of the box features with the constructs specific to your technology. E.g. if you use spring all components will be registered as spring beans and will have the classic behavior that every spring developer expects. 
-  If you use OSGi you will find the out of the box features as Declarative Services OSGi. Basically you can use Water Framework as a facilitator to increase your productivity by taking advantage of some of the features already provided.
-
-- Develop a cross-framework application. By taking advantage of simple annotations such as @FrameworkComponent you can write an application that can run on both Spring,OSGi and Quarkus and, if you want, in Standalone mode as well.
-
-This feature makes applications customizable because each team can write code with the technology they are most comfortable with. In addition, the generator will make you super productive by already creating a solid base infrastructure.
-
-### Who should use it?
-
-All developers who are building a product that allows them to be able to integrate their own modules within the main solution.
-Whether it is a library or an extensible water platform would allow it to be enjoyed and customized by leveraging the framework that is "most convenient" for those who have to write the customizations.
-
-Suppose we wrote a CMS with water framework and suppose we allow the user to be able to write their own modules. Water would allow you to be able to start the CMS in "spring," and the user could write their customizations directly using spring.
-Another user might decide instead to svrivere customizations in Quarkus because they are using it in this version.
-Finally, a user who wants to write modules that in turn are "cross-framework" can safely do so by using just water framework in his modules.
-So using this solution allows you to be able to write libraries and/or applications that can then be customized with whatever technology you want. This is particularly convenient in some business contexts where there are specific policies about what framework or technologies to use. Some companies use only OSGi, others only spring, and so on.
-
-With Water, every module written can be enjoyed natively on the major Java frameworks on the market.
-
-### Architecture
-
-![Water Ark](images/water-high-ark.png)
-
-The basic components of the architecture are the following:
-
-- Core:
-- Repository:
-- Jpa Repository:
-- Rest: 
-
-#### Core
-
-The Core module is the foundation of the Water Framework, providing essential services and abstractions:
-
-- **Security & Permissions**: Implements a granular permission system with role-based access control
-- **Service Registry**: Manages component registration and dependency injection across different runtimes
-- **Event System**: Provides a robust event handling mechanism for real-time applications
-- **Validation**: Offers a flexible validation framework for data integrity
-- **Interceptors**: Supports AOP-like functionality for cross-cutting concerns
-
-Key features:
-- 100% modular design
-- Runtime-agnostic implementations
-- Extensible security model
-- Built-in event streaming support
-- Comprehensive test coverage
-
-#### Repository
-
-The Repository module provides a unified data access layer:
-
-- **Generic Repository Pattern**: Abstracts data access operations
-- **Query Builder**: Type-safe query construction
-- **Pagination Support**: Built-in pagination and sorting
-- **Filter System**: Flexible filtering capabilities
-- **Transaction Management**: Cross-runtime transaction support
-
-#### JPA Repository
-
-Extends the Repository module with JPA-specific implementations:
-
-- **JPA Integration**: Seamless integration with JPA providers
-- **Entity Management**: Enhanced entity lifecycle management
-- **Query Optimization**: Advanced query optimization features
-- **Caching**: Multi-level caching support
-- **Audit Trail**: Automatic audit trail generation
-
-#### Rest
-
-The Rest module provides RESTful API capabilities:
-
-- **Resource Mapping**: Automatic REST resource mapping
-- **Content Negotiation**: Flexible content type handling
-- **Security Integration**: Built-in security filters
-- **Documentation**: Automatic API documentation
-- **Versioning**: API versioning support
-
-##  Getting Started <a name="getting-started"></a>
-
-To get started with Water Framework:
-
-1. Install prerequisites:
-   - Java 17 or higher
-   - Node.js 18.20.8 or higher
-   - Gradle 7.6 or higher
-
-2. Install the Water Generator:
-   ```bash
-   npm install -g yo generator-water --registry https://nexus.acsoftware.it/nexus/repository/npm-acs-public-repo
-   ```
-
-3. Create a new project:
-   ```bash
-   yo water:app
-   ```
-
-4. Follow the interactive prompts to:
-   - Choose your target runtime
-   - Select required features
-   - Configure project settings
-
-##  Core Concepts <a name="core-concepts"></a>
-
-### Framework Components
-
-- **@FrameworkComponent**: Marks a class as a framework component
-- **@Service**: Defines a service component
-- **@Repository**: Marks a data access component
-- **@Security**: Defines security constraints
-
-### Security Model
-
-- Role-based access control
-- Permission-based authorization
-- Resource-level security
-- Cross-runtime security context
-
-### Event System
-
-- Event publishing and subscription
-- Asynchronous event processing
-- Event filtering and routing
-- Cross-runtime event propagation
-
-### Repository Pattern
-
-- Generic CRUD operations
-- Type-safe queries
-- Pagination and sorting
-- Filter system
-- Transaction management
-
-### REST API
-
-- Resource mapping
-- Content negotiation
-- Security integration
-- API versioning
-- Documentation generation
-
-
-
-
-
-
-
-
+    style CLIENT fill:#fff,stroke:#333
+    style RESTAPI fill:#BBDEFB,stroke:#1565C0
+    style API fill:#C8E6C9,stroke:#2E7D32
+    style SYSAPI fill:#FFF9C4,stroke:#F57F17
+    style REPOSITORY fill:#FFCCBC,stroke:#BF360C
+    style DB fill:#E0E0E0,stroke:#333
+```
+
+| Layer | Interface | Responsibility |
+|-------|-----------|----------------|
+| **REST** | `RestApi` | HTTP endpoints, JSON serialization, JWT validation |
+| **API** | `BaseEntityApi` | Permission checks via security annotations |
+| **System API** | `BaseEntitySystemApi` | Validation, events, business logic |
+| **Repository** | `BaseRepository` | CRUD operations, queries, transactions |
+
+---
+
+## 5. Getting Started
+
+### Prerequisites
+
+| Tool | Minimum Version |
+|------|----------------|
+| Java (JDK) | 17 |
+| Node.js | 18.20.8 |
+| Gradle | 7.6+ |
+
+> If you use **nvm**, run `nvm use 18.20.8` before using the generator.
+
+### Install the Generator
+
+```bash
+npm install -g yo generator-water \
+  --registry https://nexus.acsoftware.it/nexus/repository/npm-acs-public-repo
+```
+
+### Create Your First Project
+
+```bash
+# Create a new workspace (interactive)
+yo water:app
+
+# Or inline (non-interactive)
+yo water:app --workspaceName=my-platform --groupId=com.example \
+  --technology=spring --version=1.0.0
+```
+
+### Add a Module with an Entity
+
+```bash
+# Create a module with an entity and REST API
+yo water:new-module --workspaceName=my-platform --moduleName=product \
+  --technology=spring --withRestServices=true
+
+# Add an entity to the module
+yo water:new-entity --workspaceName=my-platform --moduleName=product \
+  --entityName=Product --withRestServices=true
+```
+
+### Build the Project
+
+```bash
+# Build all modules
+yo water:build --workspaceName=my-platform
+
+# Build specific modules
+yo water:build --workspaceName=my-platform --projects=product-model,product-service
+```
+
+### Run It
+
+```bash
+# Spring Boot
+cd my-platform/my-platform-distribution-spring
+./gradlew bootRun
+```
+
+Your application starts with:
+- REST endpoints for your entity (`/products`)
+- JWT authentication
+- User management (`/users`)
+- Permission system
+- Swagger documentation (`/v3/api-docs`)
+
+---
+
+## 6. Core Concepts
+
+### 6.1 Components & Services
+
+Every service in Water Framework implements the `Service` marker interface and is registered via `@FrameworkComponent`.
+
+```java
+// 1. Define the interface
+public interface ProductService extends Service {
+    Product findByCode(String code);
+}
+
+// 2. Implement it
+@FrameworkComponent(services = ProductService.class)
+public class ProductServiceImpl implements ProductService {
+    @Override
+    public Product findByCode(String code) {
+        // business logic
+    }
+}
+```
+
+```mermaid
+graph LR
+    A["@FrameworkComponent"] -->|discovered by| B["ClassIndex<br/><i>compile-time</i>"]
+    B -->|registered in| C["ComponentRegistry"]
+    C -->|resolves as| D["Spring Bean<br/>OSGi Service<br/>CDI Bean"]
+    style A fill:#C8E6C9,stroke:#2E7D32
+    style B fill:#FFF9C4,stroke:#F57F17
+    style C fill:#BBDEFB,stroke:#1565C0
+    style D fill:#E1BEE7,stroke:#6A1B9A
+```
+
+**Key points:**
+- `services` parameter declares which interfaces this component registers under
+- `priority` parameter (default: 1) controls resolution order — lower number = higher priority
+- Components are discovered at **compile time** via Atteo ClassIndex (no classpath scanning)
+
+### 6.2 Dependency Injection
+
+Use `@Inject` to inject dependencies from the ComponentRegistry:
+
+```java
+@FrameworkComponent(services = OrderService.class)
+public class OrderServiceImpl implements OrderService {
+
+    @Inject @Setter
+    private ProductService productService;   // Resolved from registry
+
+    @Inject @Setter
+    private ComponentRegistry componentRegistry;   // Registry itself
+
+    @Override
+    public Order createOrder(String productCode, int qty) {
+        Product product = productService.findByCode(productCode);
+        return new Order(product, qty);
+    }
+}
+```
+
+**Rules:**
+- Annotate fields with `@Inject` and provide a **setter** (`@Setter` from Lombok works)
+- By default, injection happens **once at startup** (`injectOnceAtStartup = true`)
+- Set `@Inject(injectOnceAtStartup = false)` for per-method-call re-injection
+
+### 6.3 Component Lifecycle
+
+```mermaid
+graph TD
+    A["Instantiation<br/><i>new MyComponent()</i>"] --> B["Field Injection<br/><i>@Inject fields resolved</i>"]
+    B --> C["Registry Registration<br/><i>component stored</i>"]
+    C --> D["@OnActivate<br/><i>initialization logic</i>"]
+    D --> E["Component Live<br/><i>serving requests</i>"]
+    E --> F["@OnDeactivate<br/><i>cleanup logic</i>"]
+    F --> G["Unregistration"]
+    style D fill:#C8E6C9,stroke:#2E7D32
+    style F fill:#FFCDD2,stroke:#C62828
+```
+
+```java
+@FrameworkComponent(services = CacheService.class)
+public class CacheServiceImpl implements CacheService {
+
+    @Inject @Setter
+    private ApplicationProperties properties;
+
+    private Map<String, Object> cache;
+
+    @OnActivate
+    public void onActivate() {
+        int maxSize = (int) properties.getProperty("cache.maxSize");
+        this.cache = new LinkedHashMap<>(maxSize);
+        log.info("Cache initialized with maxSize={}", maxSize);
+    }
+
+    @OnDeactivate
+    public void onDeactivate() {
+        this.cache.clear();
+        log.info("Cache cleared");
+    }
+}
+```
+
+`@OnActivate` methods can also receive parameters resolved from the registry:
+
+```java
+@OnActivate
+public void onActivate(ComponentRegistry registry, ApplicationProperties props) {
+    // Both parameters resolved automatically from the ComponentRegistry
+}
+```
+
+---
+
+## 7. Entity Management
+
+### 7.1 Defining Entities
+
+Entities extend `AbstractJpaEntity` which provides automatic ID generation, optimistic locking, and timestamps:
+
+```java
+@Entity
+@Table(name = "product")
+@Access(AccessType.FIELD)
+public class Product extends AbstractJpaEntity {
+
+    @Column(nullable = false, unique = true)
+    @NotBlank
+    private String code;
+
+    @Column(nullable = false)
+    @NotBlank
+    private String name;
+
+    @Column
+    private String description;
+
+    @Column(nullable = false)
+    @Min(0)
+    private BigDecimal price;
+
+    // getters and setters
+}
+```
+
+**Inherited fields from AbstractJpaEntity:**
+
+| Field | Column | Type | Description |
+|-------|--------|------|-------------|
+| `id` | `id` | `long` | Auto-generated primary key |
+| `entityVersion` | `entity_version` | `int` | Optimistic locking version |
+| `entityCreateDate` | `entity_create_date` | `Date` | Auto-set on insert |
+| `entityModifyDate` | `entity_modify_date` | `Date` | Auto-set on insert and update |
+
+### 7.2 Repository & CRUD
+
+```mermaid
+graph TB
+    subgraph Interfaces
+        BR["BaseRepository&lt;T&gt;<br/><i>Core-api (technology-agnostic)</i>"]
+        JR["JpaRepository&lt;T&gt;<br/><i>extends BaseRepository</i>"]
+    end
+    subgraph Implementations
+        BJRI["BaseJpaRepositoryImpl&lt;T&gt;<br/><i>JPA + EntityManager</i>"]
+        SJRI["SpringBaseJpaRepositoryImpl&lt;T&gt;<br/><i>Spring TX management</i>"]
+    end
+    BR --> JR
+    JR --> BJRI
+    BJRI --> SJRI
+    style BR fill:#E3F2FD,stroke:#1565C0
+    style JR fill:#BBDEFB,stroke:#1565C0
+    style BJRI fill:#C8E6C9,stroke:#2E7D32
+    style SJRI fill:#A5D6A7,stroke:#2E7D32
+```
+
+Define a repository for your entity:
+
+```java
+@FrameworkComponent(services = ProductRepository.class)
+public class ProductRepositoryImpl extends BaseJpaRepositoryImpl<Product>
+    implements ProductRepository {
+
+    public ProductRepositoryImpl() {
+        super(Product.class);
+    }
+}
+```
+
+All CRUD operations are inherited:
+
+```java
+// Create
+Product saved = repository.persist(product);
+
+// Read
+Product found = repository.find(42L);
+
+// Update
+Product updated = repository.update(product);
+
+// Delete
+repository.remove(42L);
+
+// Count
+long total = repository.countAll(null);
+```
+
+### 7.3 QueryBuilder
+
+The fluent QueryBuilder API constructs type-safe, technology-agnostic queries:
+
+```java
+QueryBuilder qb = repository.getQueryBuilderInstance();
+
+// Simple equality
+Query q = qb.field("code").equalTo("PRD-001");
+Product product = repository.find(q);
+
+// Range + AND
+Query q = qb.field("price").greaterThan(10.0)
+    .and(qb.field("price").lowerOrEqualThan(100.0));
+
+// LIKE + OR
+Query q = qb.field("name").like("%phone%")
+    .or(qb.field("description").like("%phone%"));
+
+// IN clause
+Query q = qb.field("id").equalTo(1).in(List.of(1L, 2L, 3L));
+
+// Nested fields (JPA relationships)
+Query q = qb.field("category.name").equalTo("Electronics");
+
+// NOT
+Query q = qb.field("archived").equalTo(true).not();
+
+// String-based (for REST query parameters)
+Query q = qb.createQueryFilter("price > 10 AND name LIKE '%phone%'");
+```
+
+**Available operators:**
+
+| Method | SQL Equivalent |
+|--------|---------------|
+| `equalTo(value)` | `= value` |
+| `notEqualTo(value)` | `<> value` |
+| `greaterThan(value)` | `> value` |
+| `greaterOrEqualThan(value)` | `>= value` |
+| `lowerThan(value)` | `< value` |
+| `lowerOrEqualThan(value)` | `<= value` |
+| `like(value)` | `LIKE value` |
+| `.and(query)` | `AND` |
+| `.or(query)` | `OR` |
+| `.not()` | `NOT` |
+| `.in(list)` | `IN (...)` |
+
+### 7.4 Pagination & Ordering
+
+```java
+// Page 1, 20 items per page, filtered, ordered by name ASC
+QueryOrder order = new DefaultQueryOrder();
+order.addOrderField("name", true);   // true = ascending
+
+Query filter = qb.field("price").greaterThan(0);
+
+PaginableResult<Product> page = repository.findAll(
+    20,      // delta (items per page, -1 for all)
+    1,       // page (1-based)
+    filter,  // query filter (null for no filter)
+    order    // ordering (null for no order)
+);
+
+// Result metadata
+page.getResults();      // List<Product> for this page
+page.getCurrentPage();  // 1
+page.getNumPages();     // total pages
+page.getNextPage();     // 2 (or 1 if last page)
+page.getDelta();        // 20
+```
+
+---
+
+## 8. REST API
+
+### 8.1 Defining REST Endpoints
+
+Water uses a **dual-interface pattern** to support both JAX-RS and Spring MVC from a single definition:
+
+```mermaid
+graph TB
+    API["ProductRestApi<br/><i>JAX-RS annotations</i><br/><i>@FrameworkRestApi</i>"]
+    SPRING["ProductSpringRestApi<br/><i>Spring MVC annotations</i><br/><i>extends ProductRestApi</i>"]
+    CTRL["ProductRestControllerImpl<br/><i>@FrameworkRestController</i><br/><i>extends BaseEntityRestApi</i>"]
+
+    API --> SPRING
+    API --> CTRL
+    SPRING --> CTRL
+
+    style API fill:#BBDEFB,stroke:#1565C0
+    style SPRING fill:#C8E6C9,stroke:#2E7D32
+    style CTRL fill:#FFF9C4,stroke:#F57F17
+```
+
+**Step 1 — Generic interface (JAX-RS):**
+
+```java
+@FrameworkRestApi
+@Api(tags = "Product")
+@Path("/products")
+@LoggedIn
+public interface ProductRestApi extends RestApi {
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    Product saveProduct(@JsonView(WaterJsonView.Public.class) Product entity);
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    Product updateProduct(@JsonView(WaterJsonView.Public.class) Product entity);
+
+    @GET @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @JsonView(WaterJsonView.Public.class)
+    Product findProduct(@PathParam("id") long id);
+
+    @DELETE @Path("/{id}")
+    void removeProduct(@PathParam("id") long id);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @JsonView(WaterJsonView.Public.class)
+    PaginableResult<Product> findAllProducts(
+        @QueryParam("delta") int delta,
+        @QueryParam("page") int page);
+}
+```
+
+**Step 2 — Spring interface (adds Spring annotations):**
+
+```java
+@FrameworkRestApi
+@RequestMapping("/products")
+public interface ProductSpringRestApi extends ProductRestApi {
+
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    Product saveProduct(@RequestBody Product entity);
+
+    @PutMapping(consumes = "application/json", produces = "application/json")
+    Product updateProduct(@RequestBody Product entity);
+
+    @GetMapping(value = "/{id}", produces = "application/json")
+    Product findProduct(@PathVariable("id") long id);
+
+    @DeleteMapping("/{id}")
+    void removeProduct(@PathVariable("id") long id);
+
+    @GetMapping(produces = "application/json")
+    PaginableResult<Product> findAllProducts(
+        @RequestParam("delta") int delta,
+        @RequestParam("page") int page);
+}
+```
+
+**Step 3 — Controller implementation:**
+
+```java
+@FrameworkRestController(referredRestApi = ProductRestApi.class)
+public class ProductRestControllerImpl extends BaseEntityRestApi<Product>
+    implements ProductRestApi, ProductSpringRestApi {
+
+    @Inject @Setter
+    private ProductApi productApi;
+
+    @Override
+    protected BaseEntityApi<Product> getEntityService() {
+        return productApi;
+    }
+    // All CRUD methods inherited from BaseEntityRestApi
+}
+```
+
+### 8.2 Entity CRUD Endpoints
+
+`BaseEntityRestApi<T>` provides default implementations for:
+
+| HTTP Method | Path | Operation |
+|------------|------|-----------|
+| `POST` | `/products` | Create entity |
+| `PUT` | `/products` | Update entity |
+| `GET` | `/products/{id}` | Find by ID |
+| `DELETE` | `/products/{id}` | Remove by ID |
+| `GET` | `/products?delta=20&page=1&filter=...&order=...` | Paginated list |
+
+### 8.3 JSON Views
+
+Control which fields are serialized per endpoint using `WaterJsonView`:
+
+```mermaid
+graph LR
+    C["Compact<br/><i>minimal fields</i>"] --> E["Extended<br/><i>+ detail fields</i>"]
+    E --> P["Public<br/><i>+ all public fields</i><br/><b>DEFAULT</b>"]
+    I["Internal<br/><i>system only</i>"]
+    S["Secured<br/><i>encrypted</i>"]
+    PR["Privacy<br/><i>GDPR</i>"]
+    style P fill:#C8E6C9,stroke:#2E7D32
+    style C fill:#E3F2FD,stroke:#1565C0
+    style E fill:#BBDEFB,stroke:#1565C0
+    style I fill:#FFCDD2,stroke:#C62828
+    style S fill:#FFE0B2,stroke:#E65100
+    style PR fill:#E1BEE7,stroke:#6A1B9A
+```
+
+```java
+@Entity
+public class Product extends AbstractJpaEntity {
+    @JsonView(WaterJsonView.Compact.class)
+    private String name;           // in Compact, Extended, Public
+
+    @JsonView(WaterJsonView.Extended.class)
+    private String description;    // in Extended, Public only
+
+    @JsonView(WaterJsonView.Internal.class)
+    private String internalCode;   // never exposed via REST
+}
+```
+
+### 8.4 Exception Handling
+
+Exceptions are automatically mapped to HTTP responses:
+
+| Exception | HTTP Status |
+|-----------|------------|
+| `UnauthorizedException` | 401 Unauthorized |
+| `EntityNotFound` | 404 Not Found |
+| `NoResultException` | 404 Not Found |
+| `DuplicateEntityException` | 409 Conflict |
+| `ValidationException` | 422 Unprocessable Entity |
+| `RuntimeException` | 500 Internal Server Error |
+
+No try/catch needed in controllers — the `GenericExceptionMapperProvider` handles everything.
+
+---
+
+## 9. Security
+
+### 9.1 Authentication (JWT)
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant F as JWT Filter
+    participant R as Runtime
+    participant S as Service
+
+    C->>F: GET /products (Authorization: Bearer <token>)
+    F->>F: Extract & validate JWT
+    F->>F: Resolve principals (User + Roles)
+    F->>R: fillSecurityContext(JwtSecurityContext)
+    F->>S: Forward request
+    S->>R: getSecurityContext()
+    S-->>C: Response (200 OK)
+```
+
+Endpoints annotated with `@LoggedIn` require a valid JWT token:
+
+```java
+@LoggedIn  // All methods require authentication
+@Path("/products")
+public interface ProductRestApi extends RestApi {
+
+    @GET @Path("/public/catalog")
+    // No @LoggedIn here — this method is public
+    List<Product> getPublicCatalog();
+
+    @POST
+    @LoggedIn(issuers = {"com.example.model.User"})  // Custom issuer
+    Product createProduct(Product product);
+}
+```
+
+**Token format:** Standard JWT with user principal and role principals, transmitted via `Authorization: Bearer <token>` header or `JWT` cookie.
+
+### 9.2 Authorization (Roles & Permissions)
+
+```mermaid
+graph TB
+    USER["User"] -->|has| ROLE["Roles<br/><i>(e.g., productManager)</i>"]
+    ROLE -->|grants| PERM["Permissions<br/><i>(entity + action)</i>"]
+    PERM -->|checked by| ANN["@AllowPermissions<br/>@AllowGenericPermissions"]
+
+    style USER fill:#E3F2FD,stroke:#1565C0
+    style ROLE fill:#C8E6C9,stroke:#2E7D32
+    style PERM fill:#FFF9C4,stroke:#F57F17
+    style ANN fill:#FFCCBC,stroke:#BF360C
+```
+
+Water implements a **three-level** permission model:
+
+1. **Actions** — What can be done (SAVE, UPDATE, FIND, REMOVE, FIND_ALL, ...)
+2. **Resources** — Which entities the action applies to
+3. **Roles** — Groups of permissions assigned to users
+
+Default roles are generated per entity:
+- `<entity>Manager` — full CRUD
+- `<entity>Viewer` — read only
+- `<entity>Editor` — create and update
+
+### 9.3 Security Annotations
+
+```java
+// Permission on a specific entity instance (checked by ID)
+@AllowPermissions(
+    actions = {CrudActions.SAVE},
+    checkById = true,
+    idParamIndex = 0,
+    systemApiRef = "com.example.api.ProductSystemApi"
+)
+Product save(Product entity);
+
+// Permission on a resource type (not instance-specific)
+@AllowGenericPermissions(
+    actions = {CrudActions.FIND_ALL},
+    resourceName = "com.example.model.Product"
+)
+PaginableResult<Product> findAll(int delta, int page);
+
+// Permission checked on the return value
+@AllowPermissionsOnReturn(actions = {CrudActions.FIND})
+Product find(long id);
+```
+
+---
+
+## 10. Multi-Runtime Support
+
+```mermaid
+graph TB
+    APP["Your Application Code<br/><i>@FrameworkComponent, @Inject, @OnActivate</i>"]
+
+    subgraph Runtimes
+        SPR["<b>Spring</b><br/>SpringComponentRegistry<br/>Spring AOP<br/>@Autowired compatible"]
+        OSGI["<b>OSGi</b><br/>OsgiComponentRegistry<br/>JDK Dynamic Proxy<br/>BundleContext services"]
+        QRK["<b>Quarkus</b><br/>(planned)<br/>Arc CDI integration"]
+        STD["<b>Standalone</b><br/>TestComponentRegistry<br/>No container needed"]
+    end
+
+    APP --> SPR
+    APP --> OSGI
+    APP --> QRK
+    APP --> STD
+
+    style APP fill:#1565C0,color:#fff
+    style SPR fill:#C8E6C9,stroke:#2E7D32
+    style OSGI fill:#BBDEFB,stroke:#1565C0
+    style QRK fill:#FFE0B2,stroke:#E65100
+    style STD fill:#E0E0E0,stroke:#333
+```
+
+| Aspect | Spring | OSGi | Standalone/Test |
+|--------|--------|------|-----------------|
+| **Registry** | `SpringComponentRegistry` | `OsgiComponentRegistry` | `TestComponentRegistry` |
+| **Backing store** | `BeanFactory` | `BundleContext` | `HashMap` |
+| **Interceptors** | Spring AOP `@Aspect` | JDK Dynamic Proxy | `TestServiceProxy` |
+| **Configuration** | `application.properties` | `it.water.application.cfg` | Manual `Properties` |
+| **TX Management** | `TransactionTemplate` | Manual `EntityTransaction` | Manual |
+| **Discovery** | ClassIndex + BeanFactory | ClassIndex + BundleContext | ClassIndex |
+
+### Choosing a Development Mode
+
+**Single-runtime** — You use Spring (or OSGi) directly and Water enhances it:
+
+```java
+@SpringBootApplication
+@EnableWaterFramework   // Activates Water in Spring
+public class MyApp {
+    public static void main(String[] args) {
+        SpringApplication.run(MyApp.class, args);
+    }
+}
+```
+
+**Cross-framework** — You use only Water annotations, and the code runs everywhere:
+
+```java
+@FrameworkComponent(services = MyService.class)
+public class MyServiceImpl implements MyService {
+    @Inject @Setter
+    private AnotherService dependency;
+    // Runs on Spring, OSGi, Quarkus — unchanged
+}
+```
+
+---
+
+## 11. Advanced Topics
+
+### 11.1 Interceptors & AOP
+
+Water provides method-level interception for cross-cutting concerns:
+
+```mermaid
+graph LR
+    CALL["Method Call"] --> BEFORE["BeforeMethodInterceptor<br/><i>permission checks, validation</i>"]
+    BEFORE --> FIELD["BeforeMethodFieldInterceptor<br/><i>@Inject re-injection</i>"]
+    FIELD --> EXEC["Method Execution"]
+    EXEC --> AFTER["AfterMethodInterceptor<br/><i>auditing, post-processing</i>"]
+    AFTER --> RET["Return"]
+
+    style BEFORE fill:#FFF9C4,stroke:#F57F17
+    style FIELD fill:#E3F2FD,stroke:#1565C0
+    style EXEC fill:#C8E6C9,stroke:#2E7D32
+    style AFTER fill:#FFCCBC,stroke:#BF360C
+```
+
+Every service method call passes through the interceptor chain. Built-in interceptors handle:
+- **Permission enforcement** — `@AllowPermissions` annotations
+- **Field injection** — `@Inject(injectOnceAtStartup = false)` fields
+- **Custom logic** — implement `BeforeMethodInterceptor<A>` or `AfterMethodInterceptor<A>`
+
+### 11.2 Event System
+
+Entity lifecycle events are produced automatically:
+
+| Event | When |
+|-------|------|
+| `PreSaveEvent` | Before persist |
+| `PostSaveEvent` | After persist (entity has ID) |
+| `PreUpdateEvent` | Before update |
+| `PreUpdateDetailedEvent` | Before update (with before/after state) |
+| `PostUpdateDetailedEvent` | After update (with before/after state) |
+| `PreRemoveEvent` | Before delete |
+| `PostRemoveEvent` | After delete |
+
+Subscribe to events by registering an `ApplicationEventProducer` component.
+
+### 11.3 Entity Extensions
+
+Entities implementing `ExpandableEntity` can be extended at runtime without modifying source code:
+
+```java
+public class Product extends AbstractJpaExpandableEntity {
+    // Original fields...
+}
+
+// A separate module adds fields via EntityExtensionService
+// Extension data is stored in a separate table (one-to-one)
+// Serialized/deserialized automatically with WaterJacksonModule
+```
+
+### 11.4 Shared Entities
+
+The `SharedEntity` module enables sharing owned entities between users with configurable permissions.
+
+### 11.5 Module Properties
+
+Use the `Options` pattern for configurable module properties:
+
+```java
+public interface ProductOptions extends Service {
+    int maxProductsPerCategory();
+    String defaultCurrency();
+}
+```
+
+Properties are resolved from `ApplicationProperties` with environment variable support and runtime overrides.
+
+---
+
+## 12. Module Reference
+
+```mermaid
+graph TB
+    subgraph Foundation
+        CORE["Core<br/><i>10 sub-modules</i>"]
+        IMPL["Implementation<br/><i>OSGi + Spring</i>"]
+        DIST["Distribution<br/><i>packaging</i>"]
+    end
+
+    subgraph Persistence
+        REPO["Repository<br/><i>abstractions</i>"]
+        JPA["JpaRepository<br/><i>JPA implementation</i>"]
+    end
+
+    subgraph REST_Security["REST & Security"]
+        REST["Rest<br/><i>8 sub-modules</i>"]
+        AUTH["Authentication"]
+    end
+
+    subgraph Domain
+        USR["User"]
+        ROLE["Role"]
+        PERM["Permission"]
+        COMP["Company"]
+        SE["SharedEntity"]
+    end
+
+    subgraph Connectors
+        DOC["DocumentsManager"]
+        EMAIL["EMail"]
+        ETH["EthereumConnector"]
+        HADOOP["HadoopConnector"]
+        S3["StorageS3"]
+        ZK["ZookeeperConnector"]
+        SD["ServiceDiscovery"]
+        GW["ApiGateway"]
+    end
+
+    CORE --> IMPL
+    CORE --> REPO
+    REPO --> JPA
+    CORE --> REST
+    REST --> AUTH
+    CORE --> USR
+    USR --> ROLE
+    ROLE --> PERM
+    USR --> COMP
+    PERM --> SE
+
+    style Foundation fill:#E3F2FD,stroke:#1565C0
+    style Persistence fill:#C8E6C9,stroke:#2E7D32
+    style REST_Security fill:#FFF9C4,stroke:#F57F17
+    style Domain fill:#E1BEE7,stroke:#6A1B9A
+    style Connectors fill:#FFE0B2,stroke:#E65100
+```
+
+| Module | Description |
+|--------|-------------|
+| **Core** | Foundation: interfaces, registry, interceptors, security, validation, testing |
+| **Implementation** | Runtime adapters for OSGi and Spring |
+| **Distribution** | Packaging for OSGi (Karaf), Spring Boot, Quarkus |
+| **Repository** | Technology-agnostic persistence abstractions |
+| **JpaRepository** | JPA-based repository implementations |
+| **Rest** | REST API layer: JAX-RS, Spring MVC, JWT, Swagger |
+| **Authentication** | Login flows and authentication providers |
+| **User** | User registration, activation, password management |
+| **Role** | Role definitions and role-user associations |
+| **Permission** | Granular RBAC permission management |
+| **SharedEntity** | Entity sharing between users |
+| **Company** | Company/organization entity management |
+| **DocumentsManager** | Document upload and storage |
+| **EMail** | Email service with template support |
+| **EthereumConnector** | Ethereum blockchain integration |
+| **HadoopConnector** | Hadoop integration |
+| **ZookeeperConnector** | Zookeeper for clustering |
+| **ServiceDiscovery** | Service discovery mechanisms |
+| **ApiGateway** | API gateway and routing |
+
+---
+
+## 13. Generator Commands
+
+| Command | Description |
+|---------|-------------|
+| `yo water:app` | Create a new workspace |
+| `yo water:new-module` | Add a module to the workspace |
+| `yo water:new-entity` | Add an entity to a module |
+| `yo water:build` | Build modules (with dependency analysis) |
+| `yo water:help --fulltext` | Show all available commands with details |
+
+**Common flags:**
+
+| Flag | Description |
+|------|-------------|
+| `--workspaceName` | Target workspace name |
+| `--moduleName` | Target module name |
+| `--entityName` | Entity class name |
+| `--technology` | Runtime: `spring`, `osgi`, `quarkus` |
+| `--withRestServices` | Generate REST endpoints |
+| `--projects` | Comma-separated list of projects to build |
+
+> Use `--inline` mode and pass all parameters as arguments to avoid interactive prompts.
+
+---
+
+## 14. Who Should Use It?
+
+Water Framework is designed for teams building **extensible products** where:
+
+- **Multi-team development** — Each team uses the Java framework they prefer (Spring, OSGi, Quarkus) while contributing modules to the same platform
+- **Extensible platforms** — Like a CMS or IoT platform where end-users write custom plugins
+- **Enterprise environments** — Where different departments mandate different technology stacks
+- **Product companies** — Building a core product that must adapt to diverse customer infrastructures
+
+**Example:** You build a CMS with Water Framework and deploy it on Spring. A client writes custom modules using Spring. Another client writes modules using Quarkus. A third writes cross-framework modules. All coexist in the same platform.
+
+---
+
+## 15. License
+
+Water Framework is released under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+---
+
+<p align="center">
+  <b>Water Framework</b> — Be water, my friend.
+</p>

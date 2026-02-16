@@ -212,41 +212,49 @@ npm install -g yo generator-water \
 ### Create Your First Project
 
 ```bash
-# Create a new workspace (interactive)
-yo water:app
+# Create a new project (interactive — the generator will prompt for every option)
+yo water:new-project
 
-# Or inline (non-interactive)
-yo water:app --workspaceName=my-platform --groupId=com.example \
-  --technology=spring --version=1.0.0
+# Or inline (non-interactive — skip all prompts)
+yo water:new-project --inlineArgs \
+  --projectName=product-catalog \
+  --projectTechnology=spring \
+  --applicationType=entity \
+  --modelName=Product \
+  --hasRestServices=true \
+  --restContextRoot=/products \
+  --hasAuthentication=true
 ```
 
-### Add a Module with an Entity
+### Add an Entity to an Existing Project
 
 ```bash
-# Create a module with an entity and REST API
-yo water:new-module --workspaceName=my-platform --moduleName=product \
-  --technology=spring --withRestServices=true
+# Add a new JPA entity with full CRUD stack to an existing project
+yo water:add-entity
+```
 
-# Add an entity to the module
-yo water:new-entity --workspaceName=my-platform --moduleName=product \
-  --entityName=Product --withRestServices=true
+### Add REST Services to an Existing Project
+
+```bash
+# Add REST API layer to a project that doesn't have one
+yo water:add-rest-services
 ```
 
 ### Build the Project
 
 ```bash
-# Build all modules
-yo water:build --workspaceName=my-platform
+# Build selected projects (respects dependency order)
+yo water:build --projects=product-catalog
 
-# Build specific modules
-yo water:build --workspaceName=my-platform --projects=product-model,product-service
+# Build all projects in the workspace
+yo water:build-all
 ```
 
 ### Run It
 
 ```bash
 # Spring Boot
-cd my-platform/my-platform-distribution-spring
+cd product-catalog/product-catalog-service
 ./gradlew bootRun
 ```
 
@@ -1011,26 +1019,62 @@ graph TB
 
 ## 13. Generator Commands
 
+### Scaffolding
+
 | Command | Description |
 |---------|-------------|
-| `yo water:app` | Create a new workspace |
-| `yo water:new-module` | Add a module to the workspace |
-| `yo water:new-entity` | Add an entity to a module |
-| `yo water:build` | Build modules (with dependency analysis) |
-| `yo water:help --fulltext` | Show all available commands with details |
+| `yo water:new-project` | Create a new microservice project with model, API, and service layers |
+| `yo water:add-entity` | Add a new JPA entity (with full CRUD stack) to an existing project |
+| `yo water:add-rest-services` | Add REST API layer to an existing project that doesn't have one |
+| `yo water:new-empty-module` | Add a custom Gradle sub-module to an existing project |
+| `yo water:new-entity-extension` | Extend an entity from another module (e.g., extend WaterUser) |
 
-**Common flags:**
+### Build & Publish
+
+| Command | Description |
+|---------|-------------|
+| `yo water:build` | Build selected workspace projects (respects dependency order) |
+| `yo water:build-all` | Build all projects in the workspace |
+| `yo water:publish` | Publish selected projects to a Maven repository |
+| `yo water:publish-all` | Publish all workspace projects |
+
+### Utilities
+
+| Command | Description |
+|---------|-------------|
+| `yo water:projects-order` | Define build/deploy precedence for projects |
+| `yo water:projects-order-show` | Display current project build order |
+| `yo water:stabilityMetrics` | Analyze code quality (abstraction, instability, zones) |
+| `yo water:help` | Show available commands; add `--fulltext` for full docs |
+
+> **Note:** `yo water:app` is the default Yeoman entry point and does nothing. Always use a specific sub-generator (e.g., `yo water:new-project`).
+
+### `new-project` flags
 
 | Flag | Description |
 |------|-------------|
-| `--workspaceName` | Target workspace name |
-| `--moduleName` | Target module name |
-| `--entityName` | Entity class name |
-| `--technology` | Runtime: `spring`, `osgi`, `quarkus` |
-| `--withRestServices` | Generate REST endpoints |
+| `--inlineArgs` | Skip interactive prompts, pass all parameters inline |
+| `--projectName` | Project name in kebab-case (e.g., `product-catalog`) |
+| `--projectTechnology` | Runtime: `water` (default), `spring`, `osgi`, `quarkus` |
+| `--applicationType` | `entity` (with persistence) or `service` (integration only) |
+| `--modelName` | Entity class name in PascalCase (e.g., `Product`) |
+| `--hasRestServices` | Generate REST controllers and Karate tests (`true`/`false`) |
+| `--restContextRoot` | REST base path (e.g., `/products`) |
+| `--hasAuthentication` | Add `@Login` annotation for JWT auth on REST endpoints |
+| `--isProtectedEntity` | Enable Permission System access control on the entity |
+| `--isOwnedEntity` | Enable ownership semantics (entities belong to specific users) |
+| `--hasModel` | For `service` type: whether the service has its own model (`true`/`false`) |
+| `--moreModules` | Enable additional feature modules (`true`/`false`) |
+| `--modules` | Comma-separated modules: `user-integration`, `role-integration`, `permission`, `shared-entity-integration` |
+| `--hasSonarqubeIntegration` | Add Sonarqube properties for CI/CD |
+
+### Build flags
+
+| Flag | Description |
+|------|-------------|
 | `--projects` | Comma-separated list of projects to build |
 
-> Use `--inline` mode and pass all parameters as arguments to avoid interactive prompts.
+> Use `--inlineArgs` and pass all parameters as arguments to avoid interactive prompts.
 
 ---
 

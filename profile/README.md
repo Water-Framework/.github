@@ -329,8 +329,8 @@ public class OrderServiceImpl implements OrderService {
 
 **Rules:**
 - Annotate fields with `@Inject` and provide a **setter** (`@Setter` from Lombok works)
-- By default, injection happens **once at startup** (`injectOnceAtStartup = true`)
-- Set `@Inject(injectOnceAtStartup = false)` for per-method-call re-injection
+- By default, injection happens **dynamically** (`injectOnceAtStartup = false`)
+- Set `@Inject(injectOnceAtStartup = true)` to inject once at startup for global singleton components
 
 ### 6.3 Component Lifecycle
 
@@ -417,7 +417,7 @@ public class Product extends AbstractJpaEntity {
 | Field | Column | Type | Description |
 |-------|--------|------|-------------|
 | `id` | `id` | `long` | Auto-generated primary key |
-| `entityVersion` | `entity_version` | `int` | Optimistic locking version |
+| `entityVersion` | `entity_version` | `Integer` | Optimistic locking version |
 | `entityCreateDate` | `entity_create_date` | `Date` | Auto-set on insert |
 | `entityModifyDate` | `entity_modify_date` | `Date` | Auto-set on insert and update |
 
@@ -748,7 +748,7 @@ public interface ProductRestApi extends RestApi {
 }
 ```
 
-**Token format:** Standard JWT with user principal and role principals, transmitted via `Authorization: Bearer <token>` header or `JWT` cookie.
+**Token format:** Standard JWT with user principal and role principals, transmitted via `Authorization: Bearer <token>` header or `HIT-AUTH` cookie.
 
 ### 9.2 Authorization (Roles & Permissions)
 
@@ -788,6 +788,8 @@ Default roles are generated per entity:
 Product save(Product entity);
 
 // Permission on a resource type (not instance-specific)
+// Attributes: actions, resourceName (explicit class name),
+//             resourceParamName (extract resource name from method parameter)
 @AllowGenericPermissions(
     actions = {CrudActions.FIND_ALL},
     resourceName = "com.example.model.Product"
